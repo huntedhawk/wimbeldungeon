@@ -42,3 +42,6 @@ For more advanced rules:
 Rackets have a point of damage added if a player rolls a 5 or less. If a critical failure is rolled (i.e. 1) then two points of damage are added. After three points of damage a racket breaks and that player loses the point. A new racket is then given to the player and the game continues.
 
 Any roll above 15 gives the player a point of power. A critical success (i.e. 20) gives the player two points of power. Power can be spent to either reduce the threshold of your return by 5 (Calm in the Storm) or increase the threshold of opponents return by 5 (Press the Advantage). Reducing the threshold can be used even if the threshold has been raised by the use of power. Increasing the threshold is capped at 20. i.e. a natural 20 will still always return a shot. Power is gained even if the player doesn’t return the shot. I.e. rolls a 16 against an 18 
+
+
+This code is licensed under the GNU GPL see LICENSE.md
