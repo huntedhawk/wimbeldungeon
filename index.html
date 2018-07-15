@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <link rel="stylesheet" href="assets/dice.css">
+
+    <title>Hello, world!</title>
+
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="text-lg-center">Wimbeldungeon</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-2">
+
+        </div>
+        <div class="col-8">
+            <div class="dice-mat">
+                <div class="die">
+                    <figure class="face face-1"></figure>
+                    <figure class="face face-2"></figure>
+                    <figure class="face face-3"></figure>
+                    <figure class="face face-4"></figure>
+                    <figure class="face face-5"></figure>
+                    <figure class="face face-6"></figure>
+                    <figure class="face face-7"></figure>
+                    <figure class="face face-8"></figure>
+                    <figure class="face face-9"></figure>
+                    <figure class="face face-10"></figure>
+                    <figure class="face face-11"></figure>
+                    <figure class="face face-12"></figure>
+                    <figure class="face face-13"></figure>
+                    <figure class="face face-14"></figure>
+                    <figure class="face face-15"></figure>
+                    <figure class="face face-16"></figure>
+                    <figure class="face face-17"></figure>
+                    <figure class="face face-18"></figure>
+                    <figure class="face face-19"></figure>
+                    <figure class="face face-20"></figure>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+<script src="assets/wimbeldungeon.js"></script>
+<script>
+
+    var gameObj;
+    gameObj = new Wimbledungeons(true,true);
+    gameObj.team1.addPlayer('Player 1');
+    gameObj.team2.addPlayer('Player 2');
+
+</script>
+</body>
+</html>

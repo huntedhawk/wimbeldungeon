@@ -1,3 +1,11 @@
+.dice-mat {
+    margin: auto auto;
+    position: relative;
+    width: 200px;
+    height: 200px;
+    -webkit-perspective: 1500px;
+    perspective: 1500px;
+}
 @-webkit-keyframes roll {
     10% {
         -webkit-transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
@@ -41,19 +49,6 @@
         -webkit-transform: rotateX(480deg) rotateY(960deg) rotateZ(0deg);
         transform: rotateX(480deg) rotateY(960deg) rotateZ(0deg);
     }
-}
-body {
-    background: #333;
-    padding: 20px;
-}
-
-.content {
-    margin: auto auto;
-    position: relative;
-    width: 200px;
-    height: 200px;
-    -webkit-perspective: 1500px;
-    perspective: 1500px;
 }
 
 .die {
@@ -261,42 +256,4 @@ body {
 .die .face:nth-child(15) {
     -webkit-transform: rotateY(540deg) translateZ(75px) translateY(54.18px) rotateX(-11deg);
     transform: rotateY(540deg) translateZ(75px) translateY(54.18px) rotateX(-11deg);
-}
-
-h2 {
-    color: #fafafa;
-}
-
-ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-ul > li {
-    display: inline-block;
-    margin: 10px 10px;
-}
-
-a {
-    text-align: center;
-    color: #fff;
-    text-decoration: none;
-    font-size: 25px;
-    font-weight: bold;
-    padding: 5px 15px;
-    width: 40px;
-    display: inline-block;
-    border: 1px solid #dcdcdc;
-    border-radius: 4px;
-    background-color: #999;
-}
-a.active {
-    background-color: #333;
-}
-a:hover {
-    background-color: #666;
-}
-a.randomize {
-    width: auto;
-    margin: 20px 10px;
 }

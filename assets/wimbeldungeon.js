@@ -1,3 +1,4 @@
+
 function racket() {
     this.damage = 5;
     this.damageRacket = function () {
@@ -18,14 +19,18 @@ function team(teamName) {
     this.players = [];
     this.addPlayer = function (name) {
         this.players.push(new player(name,this.name))
+        if(this.players.length === 1)
+        {
+            this.name = name;
+        }
     }
 }
-var diceTemp;
 function dice() {
     this.roll = function () {
         result =  Math.floor(Math.random()*20+1);
         diceTemp = this;
         diceTemp.die.addClass('rolling');
+
         clearTimeout(this.timeoutId);
 
         this.timeoutId = setTimeout(function () {
@@ -63,16 +68,35 @@ function scoreboard() {
     };
     this.addPoint = function(servingteam,oposingteam)
     {
-        servingteam.game = servingteam.game + 10;
-        console.log('point to ' + servingteam.name);
-        if(servingteam.game >= 40 && servingteam.game >= oposingteam.game+20)
+        switch (servingteam.game)
         {
-            servingteam.set++;
-            console.log('Game point to ' + servingteam.name);
-            servingteam.game = 0;
-            oposingteam.game = 0;
+            case 0:
+                servingteam.game = 15;
+                break;
+            case 15:
+                servingteam.game = 20;
+                break;
+            case 20:
+                servingteam.game = 30;
+                break;
+            case 30:
+                servingteam.game = 40;
+                break;
+            case 40:
+                servingteam.game = 'Advantage';
+                if(oposingteam.game === 'Advantage')
+                {
+                    oposingteam.game = 40;
+                }
+                break;
+            case 'Advantage':
+                servingteam.game = 0;
+                servingteam.set++;
+                break;
 
         }
+        console.log('point to ' + servingteam.name);
+
         if(servingteam.set >= 6 && servingteam.set > oposingteam.set+2)
         {
             console.log('Match to ' + servingteam.name);
@@ -82,6 +106,25 @@ function scoreboard() {
 
     }
 
+}
+function rally() {
+    this.current = 0;
+    this.previous = 0;
+    this.difficulty = 0;
+    this.reset = function () {
+        this.currentSet = 0;
+        this.previousSet = 0;
+        this.difficulty = 0;
+    };
+    this.add = function (difficulty) {
+        this.difficulty = 0;
+        if(this.current != 0)
+        {
+            this.previous = this.current
+        }
+        this.current = difficulty;
+        this.difficulty = this.current + this.previous;
+    }
 }
 function Wimbledungeons(powerPoints,racketDamage) {
 
@@ -94,7 +137,7 @@ function Wimbledungeons(powerPoints,racketDamage) {
     this.team1 = new team('team1');
     this.team2 = new team('team2');
     this.scoreboard = new scoreboard(this.team1,this.team2);
-    this.rally = 0;
+    this.rally = new rally();
     this.awardPP = function (player,diceRoll) {
         if(diceRoll == 20)
         {
@@ -105,7 +148,7 @@ function Wimbledungeons(powerPoints,racketDamage) {
             player.powerPoints++;
             console.log("Power Points awarded to " + player.name);
         }
-    }
+    };
     this.pressAdvantage = function (player,difficulty) {
         if(this.rules.powerPoints && player.powerPoints > 0)
         {
@@ -118,7 +161,7 @@ function Wimbledungeons(powerPoints,racketDamage) {
 
     };
     this.checkHit = function (diceroll,difficulty) {
-        if(diceroll == 20)
+        if(diceroll === 20)
         {
             console.log('Critical success nat 20')
             return true;
@@ -164,12 +207,13 @@ function Wimbledungeons(powerPoints,racketDamage) {
             return false;
         }
     };
-    this.serve = function (serveDifficulty,shotDifficulty,servingPlayer,opossingPlayer,calmStorm) {
+    this.serve = function (serveDifficulty,servingPlayer,opossingPlayer,calmStorm) {
         var diceRoll = this.dice.roll();
         console.log('Dice Rolled a ' + diceRoll);
         this.awardPP(servingPlayer,diceRoll);
-        this.rally = serveDifficulty + shotDifficulty;
-        difficulty = this.rally;
+        this.rally.reset();
+        this.rally.add(serveDifficulty);
+        var difficulty = this.rally.difficulty;
         if(calmStorm)
         {
             difficulty = this.calmStorm(servingPlayer,difficulty);
@@ -190,8 +234,8 @@ function Wimbledungeons(powerPoints,racketDamage) {
     this.contiuneRally = function (shotDifficulty,servingPlayer,opossingPlayer,pressAdvantage,calmStorm) {
         var diceRoll = this.dice.roll();
         console.log('Dice Rolled a ' + diceRoll);
-        var difficulty = this.rally + shotDifficulty;
-        this.rally = difficulty;
+        this.rally.add(shotDifficulty);
+        var difficulty = this.rally.difficulty;
         if(pressAdvantage)
         {
             difficulty = this.pressAdvantage(servingPlayer,difficulty);
@@ -201,7 +245,7 @@ function Wimbledungeons(powerPoints,racketDamage) {
         {
             difficulty = this.calmStorm(servingPlayer,difficulty);
         }
-        result = this.checkHit(diceRoll,difficulty);
+        var result = this.checkHit(diceRoll,difficulty);
         if(!result)
         {
             this.scoreboard.addPoint(this[opossingPlayer.team],this[servingPlayer.team]);
