@@ -1,4 +1,4 @@
-#Wimbeldungeon
+# Wimbeldungeon
 
 After watching
 
@@ -8,9 +8,9 @@ I decided to make the game played in javascript
 
 Rules are:
 
-##Wimbledungeons
+## Wimbledungeons
 
-###by Jonathon Astles
+### by Jonathon Astles
 
 Players select which type of shot they will play, with more difficult shots requiring a higher roll to succeed. When returning a shot, players must beat the difficulty threshold for their opponent's shot added to the shot they have selected.
 
