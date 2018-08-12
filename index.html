@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/dice.css">
 
     <title>Hello, world!</title>
@@ -14,26 +14,43 @@
 </head>
 <body>
 <div class="container-fluid">
+    <nav class="nav bg-dark navbar-dark">
+        <h1 class="navbar-text">Wimbeldungeon</h1>
+        <div class="nav-item btn-dark">New Game</div>
+    </nav>
     <div class="row">
-        <div class="col-12">
-            <h1 class="text-lg-center">Wimbeldungeon</h1>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-2">
+        <div class="col-9">
 
         </div>
-        <div class="col-8">
-            <div class="dice-mat">
-
+        <div class="col-3">
+            <div class="row">
+                <div class="col-12">
+                    <table class="table">
+                        <tr>
+                            <th id="player1Name">Player 1</th>
+                            <td id="player1Serving"></td>
+                            <td id="player1Game"></td>
+                            <td id="player1Set"></td>
+                        </tr>
+                        <tr>
+                            <th id="player2Name">Player 2</th>
+                            <td id="player2Serving"></td>
+                            <td id="player2Game"></td>
+                            <td id="player2Set"></td>
+                        </tr>
+                    </table>
+                </div>
             </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-2">
-        </div>
-        <div class="col-10" id="log">
+            <div class="row">
+                <div class="col-12" id="dice-mat"></div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div id="log">
 
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -43,14 +60,12 @@
 
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.js"></script>
 <script src="assets/wimbeldungeon.js"></script>
 <script>
 
-    let gameObj;
-    gameObj = new Wimbledungeons('Player 1','Player 2',true,true);
 
 </script>
 </body>

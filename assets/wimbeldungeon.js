@@ -61,22 +61,20 @@ function Scoreboard(player1,player2) {
                 game: this.player1.game,
                 set: this.player1.set
             },
-            Player2: {
+            player2: {
                 game: this.player2.game,
                 set: this.player2.set
             }
         };
         return result;
     };
+
     this.addPoint = function(player) {
         switch (player.game) {
             case 0:
                 player.game = 15;
                 break;
             case 15:
-                player.game = 20;
-                break;
-            case 20:
                 player.game = 30;
                 break;
             case 30:
@@ -84,21 +82,40 @@ function Scoreboard(player1,player2) {
                 break;
             case 40:
                 player.game = "Advantage";
-                if (player.oposingPlayer.game === "Advantage") {
-                    player.oposingPlayer.game = 40;
+                if (player.opposingPlayer.game === "Advantage") {
+                    player.opposingPlayer.game = 40;
                 }
                 break;
             case "Advantage":
                 player.game = 0;
+                player.opposingPlayer.game = 0;
                 player.set++;
+                this.log.write('game to ' + player.name);
                 break;
         }
         this.log.write("point to " + player.name);
 
-        if (player.set >= 6 && player.set > player.oposingPlayer.set + 2) {
+        if (player.set === 2) {
             this.log.write("Match to " + player.name);
-        }
+            this.player1.game = 0;
+            this.player1.set = 0;
+            this.player1.match = 0;
+            this.player2.game = 0;
+            this.player2.set = 0;
+            this.player1.racket = new Racket();
+            this.player2.racket = new Racket();
+            }
     };
+    this.draw = function () {
+        let result = this.currentScore()
+        $('#player1Name').html(this.player1.name);
+        $('#player2Name').html(this.player2.name);
+        $('#player1Game').html(result.player1.game);
+        $('#player1Set').html(result.player1.set);
+        $('#player2Game').html(result.player2.game);
+        $('#player2Set').html(result.player2.set);
+
+    }
 }
 function Rally() {
     this.current = 0;
@@ -118,6 +135,10 @@ function Log() {
     this.dom = $('#log');
     this.write = function (message) {
         this.dom.append("<p>" + message + "</p>");
+        let height = this.dom.get(0).scrollHeight;
+        this.dom.animate({
+            scrollTop:height
+        },500)
     }
 
 }
@@ -221,6 +242,7 @@ function Wimbledungeons(player1Name,player2Name,powerPoints, racketDamage) {
             this.scoreboard.addPoint(this.currentPlayer.opposingPlayer);
         }
         this.changePlayer();
+        this.draw();
         return result;
     };
     this.contiuneRally = function(
@@ -243,7 +265,11 @@ function Wimbledungeons(player1Name,player2Name,powerPoints, racketDamage) {
             );
         }
         this.changePlayer();
+        this.draw();
         return result;
+    };
+    this.draw = function () {
+        this.scoreboard.draw();
     };
     this.log.write('GameObject Built game ready');
 }
