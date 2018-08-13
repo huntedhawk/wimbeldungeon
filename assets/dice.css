@@ -8,7 +8,7 @@
     border: 50px #000000;
 }
 #log {
-    height: 50vh;
+    height: 30vh;
     overflow: hidden;
 }
 @-webkit-keyframes roll {

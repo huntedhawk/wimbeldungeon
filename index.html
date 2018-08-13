@@ -1,7 +1,6 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -16,11 +15,25 @@
 <div class="container-fluid">
     <nav class="nav bg-dark navbar-dark">
         <h1 class="navbar-text">Wimbeldungeon</h1>
-        <div class="nav-item btn-dark">New Game</div>
+        <div class="nav-link"><a href="#" class="btn btn-dark" id="newGame">New Game</a></div>
+        <div class="nav-link"><a href="#" class="btn btn-dark" id="rules">Rules</a></div>
     </nav>
     <div class="row">
         <div class="col-9">
+            <div class="form-group" id="playSpace">
+                <h3 >Current Shot :<span id="currentPlayer"></span><span id="currentShotDifficulty"></span></h3>
+                <label for="shotDifficulty"><span id="shotType">Serve</span> Difficulty</label>
+                <select class="form-control" id="shotDifficulty">
+                    <option value="3">Straight - 3</option>
+                    <option value="5">Topspin - 5</option>
+                    <option value="8">Slice - 8</option>
+                    <option value="10">Dropshot - 10</option>
+                </select>
+                <div id="advancedRules">
 
+                </div>
+                <button id="continueRally" class="btn btn-success" disabled="true">Return</button>
+            </div>
         </div>
         <div class="col-3">
             <div class="row">
@@ -54,11 +67,106 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="newGameModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New Game</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="player1NameForm">Player 1 Name</label>
+                    <input type="text"id="player1NameForm" class="form-control">
+                    <label for="player2NameForm">Player 2 Name</label>
+                    <input type="text" id="player2NameForm" class="form-control">
+                    <hr>
+                    <h6>Extra Rules</h6>
+                    <input type="checkbox" id="racketDamage">
+                    <label for="racketDamage">Racket Damage</label>
+                    <input type="checkbox" id="powerPoints">
+                    <label for="powerPoints">Power Points</label>
+                    <br>
+                    <div class="btn btn-success" id="newGameStart">New Game</div>
 
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal face" id="rulesModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Rules</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Players select which type of shot they will play, with more difficult shots requiring a higher roll to succeed. When returning a shot, players must beat the difficulty threshold for their opponent's shot added to the shot they have selected.</p>
+                <table class="table">
+                    <tr>
+                        <th>Shots</th>
+                        <th>Difficulty threshold</th>
+                    </tr>
+                    <tr>
+                        <td>Straight</td>
+                        <td>3</td>
+                    </tr>
+                    <tr>
+                        <td>Topspin</td>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <td>Slice</td>
+                        <td>8</td>
+                    </tr>
+                    <tr>
+                        <td>Dropshot</td>
+                        <td>10</td>
+                    </tr>
+                </table>
+                <p>When serving, the server can decide how risky to play their serve (i.e. how fast/close to the net). As such they can determine any skill threshold between 5 and 10. Service alternates between games as for normal tennis or for a single game service alternates between shots. Unlike regular tennis, players are not given a second serve.</p>
+                <p>Standard Tennis scoring applies with 40-40 leading to Deuce, advantage etc.</p>
+                <h5>Advanced Rules</h5>
+                <h6>Racket Damage</h6>
+                <p>Rackets have a point of damage added if a player rolls a 5 or less. If a critical failure is rolled (i.e. 1) then two points of damage are added. After three points of damage a racket breaks and that player loses the point. A new racket is then given to the player and the game continues.</p>
+                <h6>Power Points</h6>
+                <p>Any roll above 15 gives the player a point of power. A critical success (i.e. 20) gives the player two points of power. Power can be spent to either reduce the threshold of your return by 5 (Calm in the Storm) or increase the threshold of opponents return by 5 (Press the Advantage). Reducing the threshold can be used even if the threshold has been raised by the use of power. Increasing the threshold is capped at 20. i.e. a natural 20 will still always return a shot. Power is gained even if the player doesn’t return the shot. I.e. rolls a 16 against an 18</p>
 
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="newServe">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="serveDifficulty">Serve Difficulty</label>
+                    <select id="serveDifficulty" class="form-control">
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                    </select>
+                    <div id="serveAdanced">
 
-
-<!-- Optional JavaScript -->
+                    </div>
+                    <button class="btn btn-success" id="serve">Serve</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.js"></script>
@@ -66,6 +174,28 @@
 <script src="assets/wimbeldungeon.js"></script>
 <script>
 
+    let gameObj;
+    $(document).ready(function () {
+        $('#newGame').click(function () {
+            $('#newGameModal').modal();
+        });
+        $('#rules').click(function () {
+            $('#rulesModal').modal();
+        });
+        $('#continueRally').click(function () {
+            gameObj.contiuneRally($('#shotDifficulty').val(),$('#pressAdvantage').is(':checked'),$('#calmStorm').is(':checked'))
+        });
+        $('#serve').click(function () {
+            $('#newServe').modal('hide');
+            gameObj.serve($('#serveDifficulty').val(),$('#pressAdvantageServe').is(':checked'),$('#calmStormServe').is(':checked'));
+        })
+        $('#newGameStart').click(function () {
+            $('#newGameModal').modal('hide');
+            gameObj = new Wimbledungeons($('#player1NameForm').val(),$('#player2NameForm').val(),$('#powerPoints').is(':checked'),$('#racketDamage').is(':checked'));
+            gameObj.draw();
+            gameObj.startNewServe();
+        })
+    })
 
 </script>
 </body>

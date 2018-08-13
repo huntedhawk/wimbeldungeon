@@ -1,5 +1,5 @@
 function Racket() {
-    this.damage = 5;
+    this.damage = 3;
     this.damageRacket = function() {
         this.damage--;
         return this.damage;
@@ -118,18 +118,19 @@ function Scoreboard(player1,player2) {
     }
 }
 function Rally() {
-    this.current = 0;
-    this.previous = 0;
-    this.difficulty = 0;
+    this.current = parseInt(0);
+    this.previous = parseInt(0);
+    this.difficulty = parseInt(0);
     this.add = function(difficulty) {
         this.difficulty = 0;
-        if (this.current !== 0) {
-            this.previous = this.current;
-        }
-        this.current = difficulty;
+        this.previous = this.current;
+        this.current = parseInt(difficulty);
         this.difficulty = this.current + this.previous;
         return this.difficulty;
     };
+    this.draw = function () {
+        $('#currentShotDifficulty').html(" has shot difficulty - " + this.difficulty);
+    }
 }
 function Log() {
     this.dom = $('#log');
@@ -155,10 +156,11 @@ function Wimbledungeons(player1Name,player2Name,powerPoints, racketDamage) {
     this.player1.opposingPlayer = this.player2;
     this.player2.opposingPlayer = this.player1;
     this.currentPlayer = this.player1;
-
+    this.currentServer = this.player1;
     this.scoreboard = new Scoreboard(this.player1,this.player2);
     this.scoreboard.currentPlayer = this.currentPlayer;
-
+    this.rally = new Rally();
+    $('#player1Serving').html('&times;');
     this.awardPP = function(player, diceRoll) {
         if (diceRoll == 20) {
             player.powerPoints++;
@@ -210,6 +212,20 @@ function Wimbledungeons(player1Name,player2Name,powerPoints, racketDamage) {
             return false;
         }
     };
+    this.changeServer = function () {
+        if(this.currentServer === this.player1)
+        {
+            this.currentServer = this.player2;
+            $('#player2Serving').html('&times;');
+            $('#player1Serving').html('');
+        }
+        else
+        {
+            this.currentServer = this.player1;
+            $('#player1Serving').html('&times;');
+            $('#player2Serving').html('');
+        }
+    };
     this.changePlayer = function () {
         if(this.currentPlayer === this.player1)
         {
@@ -224,26 +240,37 @@ function Wimbledungeons(player1Name,player2Name,powerPoints, racketDamage) {
     };
     this.serve = function(
         serveDifficulty,
+        pressAdvantage,
         calmStorm
     ) {
+
         this.rally = new Rally();
         const diceRoll = this.dice.roll();
         this.log.write("Dice Rolled a " + diceRoll);
-        this.awardPP(this.currentPlayer, diceRoll);
+        this.awardPP(this.currentServer, diceRoll);
         let difficulty = this.rally.add(serveDifficulty);
         if (calmStorm) {
-            difficulty = this.calmStorm(this.currentPlayer, difficulty);
+            difficulty = this.calmStorm(this.currentServer, difficulty);
         }
-        if (this.racketCheck(this.currentPlayer, diceRoll)) {
+        if (pressAdvantage) {
+            difficulty = this.pressAdvantage(this.currentPlayer, difficulty);
+        }
+        if (this.racketCheck(this.currentServer, diceRoll)) {
             return false;
         }
         let result = this.checkHit(diceRoll, difficulty);
         if (!result) {
-            this.scoreboard.addPoint(this.currentPlayer.opposingPlayer);
+            this.scoreboard.addPoint(this.currentServer.opposingPlayer);
+            $('#continueRally').prop('disabled',true);
+            $('#newServe').on('hidden.bs.modal',function (e) {
+                gameObj.startNewServe();
+
+            })
+            this.changeServer();
         }
+        this.currentPlayer = this.currentServer;
         this.changePlayer();
         this.draw();
-        return result;
     };
     this.contiuneRally = function(
         shotDifficulty,
@@ -261,15 +288,32 @@ function Wimbledungeons(player1Name,player2Name,powerPoints, racketDamage) {
         }
         let result = this.checkHit(diceRoll, difficulty);
         if (!result) {
-            this.scoreboard.addPoint(this.currentPlayer.opposingPlayer
-            );
+            this.scoreboard.addPoint(this.currentPlayer.opposingPlayer);
+            $('#continueRally').prop('disabled',true);
+            this.changeServer();
+            this.startNewServe();
         }
         this.changePlayer();
         this.draw();
-        return result;
+    };
+    this.startNewServe = function () {
+        $('#newServe').off('hidden.bs.modal');
+        $('#newServe').find('.modal-title').html(this.currentServer.name + ' serving');
+        $('#newServe').modal({backdrop:'static',keyboard:false});
+        $('#continueRally').prop('disabled',false);
     };
     this.draw = function () {
+        $('#advancedRules').html('');
+        $('#serveAdanced').html('');
+        if(this.rules.powerPoints)
+        {
+            $('#advancedRules').append('<input type=checkbox id=pressAdvantage><label for="pressAdvantage">Press the advantage</label><br><input type="checkbox" id="calmStorm"><label for="calmStorm">Calm the storm</label>');
+            $('#serveAdanced').append('<input type=checkbox id=pressAdvantageServe><label for="pressAdvantageServe">Press the advantage</label><br><input type="checkbox" id="calmStormServe"><label for="calmStormServe">Calm the storm</label>');
+        };
+
+        $('#currentPlayer').html(this.currentPlayer.name);
         this.scoreboard.draw();
+        this.rally.draw();
     };
     this.log.write('GameObject Built game ready');
 }
