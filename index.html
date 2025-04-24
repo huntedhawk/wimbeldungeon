@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- Updated viewport meta for BS5 -->
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="assets/dice.css">
 
     <title>Wimbledungeons</title>
@@ -39,18 +39,34 @@
             <div class="row">
                 <div class="col-12">
                     <table class="table">
-                        <tr>
-                            <th id="player1Name">Player 1</th>
-                            <td id="player1Serving"></td>
-                            <td id="player1Game"></td>
-                            <td id="player1Set"></td>
-                        </tr>
-                        <tr>
-                            <th id="player2Name">Player 2</th>
-                            <td id="player2Serving"></td>
-                            <td id="player2Game"></td>
-                            <td id="player2Set"></td>
-                        </tr>
+                        <thead> <!-- Added thead for better structure -->
+                            <tr>
+                                <th>Player</th>
+                                <th>Serving</th>
+                                <th>Game</th>
+                                <th>Set</th>
+                                <th>PP</th> <!-- New Header -->
+                                <th>Racket</th> <!-- New Header -->
+                            </tr>
+                        </thead>
+                        <tbody> <!-- Added tbody for better structure -->
+                            <tr>
+                                <th id="player1Name">Player 1</th>
+                                <td id="player1Serving"></td>
+                                <td id="player1Game"></td>
+                                <td id="player1Set"></td>
+                                <td id="player1PP">0</td>   <!-- New Cell for P1 PP -->
+                                <td id="player1Damage">3</td> <!-- New Cell for P1 Damage -->
+                            </tr>
+                            <tr>
+                                <th id="player2Name">Player 2</th>
+                                <td id="player2Serving"></td>
+                                <td id="player2Game"></td>
+                                <td id="player2Set"></td>
+                                <td id="player2PP">0</td>   <!-- New Cell for P2 PP -->
+                                <td id="player2Damage">3</td> <!-- New Cell for P2 Damage -->
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -145,11 +161,12 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"></h5>
+                <h5 class="modal-title">Serve</h5>
+                <!-- Optional: Add close button if needed -->
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="serveDifficulty">Serve Difficulty</label>
+                    <label for="serveDifficulty">Select Serve Difficulty:</label>
                     <select id="serveDifficulty" class="form-control">
                         <option value="5">5</option>
                         <option value="6">6</option>
@@ -158,45 +175,111 @@
                         <option value="9">9</option>
                         <option value="10">10</option>
                     </select>
-                    <div id="serveAdanced">
-
+                    <div id="serveAdanced" class="mt-3">
+                        <!-- Advanced rule checkboxes will be added here by JS -->
                     </div>
-                    <button class="btn btn-success" id="serve">Serve</button>
+                    <button class="btn btn-success mt-3" id="serve">Serve</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.js"></script>
+
+<!-- Play Again Modal -->
+<div class="modal fade" id="playAgainModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="playAgainModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="playAgainModalLabel">Match Over!</h5>
+                <!-- No close button needed as choice is required -->
+            </div>
+            <div class="modal-body">
+                <p id="matchWinnerMessage"></p> <!-- To display the winner -->
+                <p>Play again?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="quitGameBtn">Quit</button>
+                <button type="button" class="btn btn-primary" id="playAgainBtn">Play Again</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script src="assets/wimbeldungeon.js"></script>
 <script>
 
-    let gameObj;
-    $(document).ready(function () {
-        $('#newGame').click(function () {
-            $('#newGameModal').modal();
+    document.addEventListener('DOMContentLoaded', function() {
+        let gameObj;
+
+        // Get modal elements
+        const newGameModalEl = document.getElementById('newGameModal');
+        const rulesModalEl = document.getElementById('rulesModal');
+        const newServeModalEl = document.getElementById('newServe');
+        const playAgainModalEl = document.getElementById('playAgainModal'); // Get new modal
+
+        // Create Bootstrap Modal instances
+        const newGameModal = new bootstrap.Modal(newGameModalEl);
+        const rulesModal = new bootstrap.Modal(rulesModalEl);
+        const newServeModal = new bootstrap.Modal(newServeModalEl, {
+             backdrop: 'static', // Prevent closing on backdrop click
+             keyboard: false    // Prevent closing with Esc key
         });
-        $('#rules').click(function () {
-            $('#rulesModal').modal();
+        const playAgainModal = new bootstrap.Modal(playAgainModalEl); // Create instance for new modal
+
+        document.getElementById('newGame').addEventListener('click', function () {
+            newGameModal.show();
         });
-        $('#continueRally').click(function () {
-            gameObj.contiuneRally($('#shotDifficulty').val(),$('#pressAdvantage').is(':checked'),$('#calmStorm').is(':checked'))
+
+        document.getElementById('rules').addEventListener('click', function () {
+            rulesModal.show();
         });
-        $('#serve').click(function () {
-            $('#newServe').modal('hide');
-            gameObj.serve($('#serveDifficulty').val(),$('#pressAdvantageServe').is(':checked'),$('#calmStormServe').is(':checked'));
-        })
-        $('#newGameStart').click(function () {
-            $('#newGameModal').modal('hide');
-            gameObj = new Wimbledungeons($('#player1NameForm').val(),$('#player2NameForm').val(),$('#powerPoints').is(':checked'),$('#racketDamage').is(':checked'));
+
+        document.getElementById('continueRally').addEventListener('click', function () {
+            const shotDifficulty = document.getElementById('shotDifficulty').value;
+            const pressAdvantage = document.getElementById('pressAdvantage') ? document.getElementById('pressAdvantage').checked : false; // Check if element exists
+            const calmStorm = document.getElementById('calmStorm') ? document.getElementById('calmStorm').checked : false; // Check if element exists
+            gameObj.contiuneRally(shotDifficulty, pressAdvantage, calmStorm);
+        });
+
+        document.getElementById('serve').addEventListener('click', function () {
+            newServeModal.hide();
+            const serveDifficulty = document.getElementById('serveDifficulty').value;
+            const pressAdvantageServe = document.getElementById('pressAdvantageServe') ? document.getElementById('pressAdvantageServe').checked : false; // Check if element exists
+            const calmStormServe = document.getElementById('calmStormServe') ? document.getElementById('calmStormServe').checked : false; // Check if element exists
+            gameObj.serve(serveDifficulty, pressAdvantageServe, calmStormServe);
+        });
+
+        document.getElementById('newGameStart').addEventListener('click', function () {
+            newGameModal.hide();
+            const player1Name = document.getElementById('player1NameForm').value;
+            const player2Name = document.getElementById('player2NameForm').value;
+            const powerPoints = document.getElementById('powerPoints').checked;
+            const racketDamage = document.getElementById('racketDamage').checked;
+            gameObj = new Wimbledungeons(player1Name, player2Name, powerPoints, racketDamage, newServeModal, playAgainModal);
             gameObj.draw();
             gameObj.startNewServe();
-        })
+        });
+
+        // Add listeners for the new modal's buttons
+        document.getElementById('playAgainBtn').addEventListener('click', function() {
+            playAgainModal.hide();
+            if (gameObj) { // Ensure gameObj exists
+                gameObj.resetGame(); // Call a reset function on the game object
+            }
+        });
+
+        document.getElementById('quitGameBtn').addEventListener('click', function() {
+            playAgainModal.hide();
+            if (gameObj) { // Ensure gameObj exists
+                gameObj.log.write("Game Over. Thanks for playing!");
+                // Leave game disabled (buttons are already disabled from winMatch)
+            }
+        });
     })
 
 </script>
 </body>
 </html>
+``` 
