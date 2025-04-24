@@ -445,7 +445,7 @@ function Wimbledungeons(player1Name, player2Name, powerPoints, racketDamage, new
         this.draw();
     };
 
-    this.contiuneRally = function(
+    this.continueRally = function(
         shotDifficulty,
         pressAdvantage,
         calmStorm
