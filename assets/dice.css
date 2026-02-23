@@ -383,8 +383,8 @@
 }
 
 .die .face:nth-child(6) {
-    -webkit-transform: rotateY(0deg) translateZ(10.7vh) translateY(4.3vh) rotateZ(180deg) rotateX(-11deg);
-    transform: rotateY(0deg) translateZ(10.7vh) translateY(4.3vh) rotateZ(180deg) rotateX(-11deg);
+    -webkit-transform: rotateY(0deg) translateZ(10.7vh) translateY(7.7vh) rotateZ(180deg) rotateX(-11deg);
+    transform: rotateY(0deg) translateZ(10.7vh) translateY(7.7vh) rotateZ(180deg) rotateX(-11deg);
 }
 
 .die .face:nth-child(7) {

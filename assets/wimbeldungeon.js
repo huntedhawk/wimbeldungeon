@@ -271,6 +271,7 @@ function Wimbledungeons(player1Name, player2Name, powerPoints, racketDamage, new
     this.currentServer = this.player1;
     this.phase = "serve";
     this.controlsDisabled = false;
+    this.debugRunning = false;
 
     this.scoreboard = new Scoreboard(this.player1, this.player2, this);
     this.rally = new Rally();
@@ -447,6 +448,11 @@ function Wimbledungeons(player1Name, player2Name, powerPoints, racketDamage, new
     };
 
     this.serve = function(serveDifficulty, pressAdvantage, calmStorm) {
+        if (this.debugRunning) {
+            this.log.write("[DEBUG] Busy running debug sequence.");
+            return;
+        }
+
         if (this.controlsDisabled) {
             return;
         }
@@ -494,6 +500,11 @@ function Wimbledungeons(player1Name, player2Name, powerPoints, racketDamage, new
     };
 
     this.continueRally = function(shotDifficulty, pressAdvantage, calmStorm) {
+        if (this.debugRunning) {
+            this.log.write("[DEBUG] Busy running debug sequence.");
+            return;
+        }
+
         if (this.controlsDisabled) {
             return;
         }
@@ -539,6 +550,152 @@ function Wimbledungeons(player1Name, player2Name, powerPoints, racketDamage, new
     };
 
     this.contiuneRally = this.continueRally;
+
+    this.runDebug = async function() {
+        if (this.debugRunning) {
+            this.log.write("[DEBUG] Debug sequence is already running.");
+            return;
+        }
+
+        this.debugRunning = true;
+
+        const delay = ms => new Promise(res => setTimeout(res, ms));
+
+        const snapshot = {
+            p1Game: this.player1.game,
+            p1Set: this.player1.set,
+            p1PP: this.player1.powerPoints,
+            p1Racket: this.player1.racket.damage,
+            p2Game: this.player2.game,
+            p2Set: this.player2.set,
+            p2PP: this.player2.powerPoints,
+            p2Racket: this.player2.racket.damage,
+            rallyCurrent: this.rally.current,
+            rallyPrevious: this.rally.previous,
+            rallyDifficulty: this.rally.difficulty,
+            controlsDisabled: this.controlsDisabled
+        };
+
+        const originalWinMatch = this.scoreboard.winMatch;
+
+        try {
+            this.log.write("[DEBUG] Starting debug sequence.");
+
+            const animations = [
+                "anim-serve-left",
+                "anim-serve-right",
+                "anim-return-left",
+                "anim-return-right",
+                "anim-miss-left",
+                "anim-miss-right"
+            ];
+
+            this.log.write("[DEBUG] Court animation sequence starting.");
+            for (let i = 0; i < animations.length; i++) {
+                this.log.write("[DEBUG] Animation: " + animations[i]);
+                this.animateCourt(animations[i]);
+                await delay(1000);
+            }
+            this.animateCourt("");
+
+            this.log.write("[DEBUG] Dice rollTo random sequence starting.");
+            let numbers = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
+            while (numbers.length) {
+                let index = Math.floor(Math.random() * numbers.length);
+                let value = numbers[index];
+                this.log.write("[DEBUG] rolling to " + value + " remaining numbers " + numbers.length);
+                this.dice.rollTo(value);
+                numbers.splice(index, 1);
+                await delay(1000);
+            }
+
+            this.log.write("[DEBUG] Scoreboard test cycle starting (real scoring, no delay).");
+
+            const waitForScoreboardDraw = () => new Promise(resolve => {
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(resolve);
+                });
+            });
+
+            const resetScoreForDebug = async () => {
+                this.player1.game = 0;
+                this.player1.set = 0;
+                this.player2.game = 0;
+                this.player2.set = 0;
+                this.controlsDisabled = false;
+                this.scoreboard.draw();
+                await waitForScoreboardDraw();
+            };
+
+            const pointTo = async (player, label) => {
+                this.log.write("[DEBUG] Scoring point -> " + label);
+                this.scoreboard.addPoint(player);
+                this.scoreboard.draw();
+                await waitForScoreboardDraw();
+            };
+
+            const winStraightGame = async player => {
+                await pointTo(player, player.name + " (15)");
+                await pointTo(player, player.name + " (30)");
+                await pointTo(player, player.name + " (40)");
+                await pointTo(player, player.name + " (wins game)");
+            };
+
+            this.scoreboard.winMatch = player => {
+                this.log.write("[DEBUG] winMatch triggered for " + player.name + " (scoring system verified).");
+                this.controlsDisabled = false;
+            };
+
+            await resetScoreForDebug();
+
+            await pointTo(this.player1, this.player1.name + " (15)");
+            await pointTo(this.player2, this.player2.name + " (15)");
+            await pointTo(this.player1, this.player1.name + " (30)");
+            await pointTo(this.player2, this.player2.name + " (30)");
+            await pointTo(this.player1, this.player1.name + " (40)");
+            await pointTo(this.player2, this.player2.name + " (40/deuce)");
+            await pointTo(this.player1, this.player1.name + " (advantage)");
+            await pointTo(this.player2, this.player2.name + " (back to deuce)");
+            await pointTo(this.player2, this.player2.name + " (advantage)");
+            await pointTo(this.player2, this.player2.name + " (wins game)");
+
+            this.log.write("[DEBUG] Drive Player 1 to match win via scoring.");
+            await resetScoreForDebug();
+            await winStraightGame(this.player1);
+            await winStraightGame(this.player1);
+            this.scoreboard.draw();
+            await waitForScoreboardDraw();
+
+            this.log.write("[DEBUG] Drive Player 2 to match win via scoring.");
+            await resetScoreForDebug();
+            await winStraightGame(this.player2);
+            await winStraightGame(this.player2);
+            this.scoreboard.draw();
+            await waitForScoreboardDraw();
+
+            this.log.write("[DEBUG] Debug sequence complete.");
+        } finally {
+            this.scoreboard.winMatch = originalWinMatch;
+            this.player1.game = snapshot.p1Game;
+            this.player1.set = snapshot.p1Set;
+            this.player1.powerPoints = snapshot.p1PP;
+            this.player1.racket.damage = snapshot.p1Racket;
+
+            this.player2.game = snapshot.p2Game;
+            this.player2.set = snapshot.p2Set;
+            this.player2.powerPoints = snapshot.p2PP;
+            this.player2.racket.damage = snapshot.p2Racket;
+
+            this.rally.current = snapshot.rallyCurrent;
+            this.rally.previous = snapshot.rallyPrevious;
+            this.rally.difficulty = snapshot.rallyDifficulty;
+            this.controlsDisabled = snapshot.controlsDisabled;
+
+            this.animateCourt("");
+            this.debugRunning = false;
+            this.draw();
+        }
+    };
 
     this.renderActionControls = function() {
         const actionControlsEl = document.getElementById("actionControls");

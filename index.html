@@ -257,6 +257,13 @@
             const powerPoints = document.getElementById('powerPoints').checked;
             const racketDamage = document.getElementById('racketDamage').checked;
             gameObj = new Wimbledungeons(player1Name, player2Name, powerPoints, racketDamage, newServeModal, playAgainModal);
+            window.wimbeldungeonGame = gameObj;
+            window.runWimbeldungeonDebug = function () {
+                if (!window.wimbeldungeonGame) {
+                    return;
+                }
+                return window.wimbeldungeonGame.runDebug();
+            };
             gameObj.draw();
             gameObj.startNewServe();
         });
