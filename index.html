@@ -21,18 +21,15 @@
     <div class="row">
         <div class="col-9">
             <div class="form-group" id="playSpace">
-                <h3 >Current Shot :<span id="currentPlayer"></span><span id="currentShotDifficulty"></span></h3>
-                <label for="shotDifficulty"><span id="shotType">Serve</span> Difficulty</label>
-                <select class="form-control" id="shotDifficulty">
-                    <option value="3">Straight - 3</option>
-                    <option value="5">Topspin - 5</option>
-                    <option value="8">Slice - 8</option>
-                    <option value="10">Dropshot - 10</option>
-                </select>
-                <div id="advancedRules">
-
+                <h3>Current Shot : <span id="currentPlayer"></span><span id="currentShotDifficulty"></span></h3>
+                <div id="courtArea" aria-label="Mini tennis court animation">
+                    <div class="court-side court-left" id="courtPlayerLeft"></div>
+                    <div class="court-net"></div>
+                    <div class="court-side court-right" id="courtPlayerRight"></div>
+                    <div id="courtBall"></div>
                 </div>
-                <button id="continueRally" class="btn btn-success" disabled="true">Return</button>
+                <div id="actionControls" class="mt-3"></div>
+                <div id="advancedRules" class="mt-2"></div>
             </div>
         </div>
         <div class="col-3">
@@ -45,8 +42,8 @@
                                 <th>Serving</th>
                                 <th>Game</th>
                                 <th>Set</th>
-                                <th>PP</th> <!-- New Header -->
-                                <th>Racket</th> <!-- New Header -->
+                                <th id="ppHeader">PP</th>
+                                <th id="racketHeader">Racket</th>
                             </tr>
                         </thead>
                         <tbody> <!-- Added tbody for better structure -->
@@ -55,16 +52,16 @@
                                 <td id="player1Serving"></td>
                                 <td id="player1Game"></td>
                                 <td id="player1Set"></td>
-                                <td id="player1PP">0</td>   <!-- New Cell for P1 PP -->
-                                <td id="player1Damage">3</td> <!-- New Cell for P1 Damage -->
+                                <td id="player1PP">0</td>
+                                <td id="player1Damage">3</td>
                             </tr>
                             <tr>
                                 <th id="player2Name">Player 2</th>
                                 <td id="player2Serving"></td>
                                 <td id="player2Game"></td>
                                 <td id="player2Set"></td>
-                                <td id="player2PP">0</td>   <!-- New Cell for P2 PP -->
-                                <td id="player2Damage">3</td> <!-- New Cell for P2 Damage -->
+                                <td id="player2PP">0</td>
+                                <td id="player2Damage">3</td>
                             </tr>
                         </tbody>
                     </table>
@@ -222,11 +219,11 @@
         // Create Bootstrap Modal instances
         const newGameModal = new bootstrap.Modal(newGameModalEl);
         const rulesModal = new bootstrap.Modal(rulesModalEl);
-        const newServeModal = new bootstrap.Modal(newServeModalEl, {
-             backdrop: 'static', // Prevent closing on backdrop click
-             keyboard: false    // Prevent closing with Esc key
+           const newServeModal = new bootstrap.Modal(newServeModalEl, {
+               backdrop: 'static',
+               keyboard: false
         });
-        const playAgainModal = new bootstrap.Modal(playAgainModalEl); // Create instance for new modal
+           const playAgainModal = new bootstrap.Modal(playAgainModalEl);
 
         document.getElementById('newGame').addEventListener('click', function () {
             newGameModal.show();
@@ -236,19 +233,21 @@
             rulesModal.show();
         });
 
-        document.getElementById('continueRally').addEventListener('click', function () {
-            const shotDifficulty = document.getElementById('shotDifficulty').value;
-            const pressAdvantage = document.getElementById('pressAdvantage') ? document.getElementById('pressAdvantage').checked : false; // Check if element exists
-            const calmStorm = document.getElementById('calmStorm') ? document.getElementById('calmStorm').checked : false; // Check if element exists
-            gameObj.contiuneRally(shotDifficulty, pressAdvantage, calmStorm);
-        });
+        document.getElementById('actionControls').addEventListener('click', function (event) {
+            const button = event.target.closest('button[data-action]');
+            if (!button || !gameObj) return;
 
-        document.getElementById('serve').addEventListener('click', function () {
-            newServeModal.hide();
-            const serveDifficulty = document.getElementById('serveDifficulty').value;
-            const pressAdvantageServe = document.getElementById('pressAdvantageServe') ? document.getElementById('pressAdvantageServe').checked : false; // Check if element exists
-            const calmStormServe = document.getElementById('calmStormServe') ? document.getElementById('calmStormServe').checked : false; // Check if element exists
-            gameObj.serve(serveDifficulty, pressAdvantageServe, calmStormServe);
+            const pressAdvantage = document.getElementById('pressAdvantage') ? document.getElementById('pressAdvantage').checked : false;
+            const calmStorm = document.getElementById('calmStorm') ? document.getElementById('calmStorm').checked : false;
+
+            const action = button.dataset.action;
+            const difficulty = button.dataset.difficulty;
+
+            if (action === 'serve') {
+                gameObj.serve(difficulty, pressAdvantage, calmStorm);
+            } else if (action === 'return') {
+                gameObj.continueRally(difficulty, pressAdvantage, calmStorm);
+            }
         });
 
         document.getElementById('newGameStart').addEventListener('click', function () {
